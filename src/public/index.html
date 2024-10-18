@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web SSH Terminal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #terminal { width: 100%; height: 400px; border: 1px solid #000; }
+        .input-group { margin: 20px 0; }
+        .input-group input { padding: 5px; }
+    </style>
+</head>
+<body>
+
+<h1>Multi-hop SSH GUI</h1>
+<div class="input-group">
+    <input type="text" id="lab" placeholder="Lab number" />
+    <button>Go SC-1</button>
+    <button>Go Router</button>
+</div>
+<div id="terminal"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    function goSC1() {
+        
+    }
+    const terminal = new Terminal();
+    const socket = io();
+
+    terminal.open(document.getElementById('terminal'));
+
+    document.getElementById('connect-btn').addEventListener('click', () => {
+        const host = document.getElementById('host').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        socket.emit('ssh-connect', { host, username, password });
+    });
+
+    terminal.onData((data) => {
+        socket.emit('input', data); // Send input to the server
+    });
+
+    socket.on('data', (data) => {
+        terminal.write(data);
+    });
+</script>
+
+</body>
+</html>
